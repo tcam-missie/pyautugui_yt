@@ -27,4 +27,4 @@ jobs:
 
       - name: Run YouTube Bot
         run: |
-          python youtube_bot.py "${{ matrix.account }}"
+          python main.py "${{ matrix.account }}"
