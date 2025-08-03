@@ -1,0 +1,30 @@
+name: YouTube Bot Automation
+
+on:
+  workflow_dispatch:
+
+jobs:
+  youtube-bot:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        account:
+          - "buil29644@gmail.com|Mail2025@"
+          - "hap35713@gmail.com|dkhoa958@"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install pyautogui easyocr pillow opencv-python-headless
+
+      - name: Run YouTube Bot
+        run: |
+          python youtube_bot.py "${{ matrix.account }}"
