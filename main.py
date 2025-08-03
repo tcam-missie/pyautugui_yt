@@ -5,9 +5,12 @@ import random
 import subprocess
 import sys
 
-# Get email and password from command line arguments
-EMAIL = sys.argv[1]
-PASSWORD = sys.argv[2]
+if len(sys.argv) < 2:
+    print("Usage: python youtube_bot.py '<email|password>'")
+    sys.exit(1)
+
+account = sys.argv[1]
+EMAIL, PASSWORD = account.split('|')
 
 # Initialize EasyOCR with Vietnamese and English
 reader = easyocr.Reader(['vi', 'en'])
