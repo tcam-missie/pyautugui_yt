@@ -13,7 +13,7 @@ account = sys.argv[1]
 EMAIL, PASSWORD = account.split('|')
 
 # Initialize EasyOCR with Vietnamese and English
-reader = easyocr.Reader(['vi', 'en'])
+reader = easyocr.Reader(['vi', 'en'], verbose=False)
 
 # Find text position function
 def find_text_position(text_list):
@@ -59,7 +59,7 @@ screenshot.save(screenshot_path)
 results = reader.readtext(screenshot_path)
 found = False
 for (bbox, text, prob) in results:
-    if "đăng nhập" in text.lower() or "sign in" in text.lower():
+    if "sign in" in text.lower():
         print(f"Found: {text} (confidence {prob:.2f})")
         (top_left, top_right, bottom_right, bottom_left) = bbox
         x = int((top_left[0] + bottom_right[0]) / 2)
