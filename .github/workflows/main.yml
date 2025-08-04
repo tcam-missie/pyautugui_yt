@@ -9,8 +9,8 @@ jobs:
     strategy:
       matrix:
         account:
-          - "buil29644@gmail.com|Mail2025@"
-          - "hap35713@gmail.com|dkhoa958@"
+          - "JilliBeckzuf57890h@vasim.org|Hello9999"
+          - "LilyanVaughanrbl36662o@vasim.org|Hello9999"
 
     steps:
       - name: Checkout repository
