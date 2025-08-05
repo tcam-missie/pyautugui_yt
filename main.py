@@ -11,7 +11,7 @@ account = sys.argv[1]
 EMAIL, PASSWORD = account.split('|')
 
 # Initialize EasyOCR with Vietnamese and English
-reader = easyocr.Reader(['vi', 'en'])
+reader = easyocr.Reader(['vi', 'en'], verbose=False)
 
 # Find text position function
 def find_text_position(text_list):
