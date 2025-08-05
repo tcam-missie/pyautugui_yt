@@ -1,0 +1,5 @@
+pyautogui
+easyocr 
+pillow 
+opencv-python-headless
+requests
