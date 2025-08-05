@@ -34,5 +34,6 @@ jobs:
         run: |
           pip install --no-python-version-warning -r requirements.txt
       - name: Run YouTube Bot
-        run: |
-          python main.py "${{ matrix.account }}"
+        run: python main.py "${{ matrix.account }}"
+        env:
+            PYTHONUTF8: 1
