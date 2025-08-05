@@ -4,16 +4,14 @@ import time
 import random
 import subprocess
 import sys
+import requests
 
-if len(sys.argv) < 2:
-    print("Usage: python youtube_bot.py '<email|password>'")
-    sys.exit(1)
-
+# Get email and password from command line arguments
 account = sys.argv[1]
 EMAIL, PASSWORD = account.split('|')
 
 # Initialize EasyOCR with Vietnamese and English
-reader = easyocr.Reader(['vi', 'en'], verbose=False)
+reader = easyocr.Reader(['vi', 'en'])
 
 # Find text position function
 def find_text_position(text_list):
@@ -42,10 +40,10 @@ def skip_ad():
     except Exception as e:
         print(f"[ERROR] Error while skipping ad: {e}")
 
-# Launch Chrome in incognito mode
+# Launch Chrome in fullscreen (NOT incognito)
 chrome_path = r'"C:\Program Files\Google\Chrome\Application\chrome.exe"'
 video_url = "https://www.youtube.com"
-subprocess.Popen(f'{chrome_path} --incognito {video_url}')
+subprocess.Popen(f'{chrome_path} --start-fullscreen {video_url}')
 
 # Wait for Chrome and YouTube to load
 time.sleep(5)
@@ -88,75 +86,129 @@ pyautogui.press('enter')
 print("Login attempt finished (if email/password is correct)")
 time.sleep(5)
 
-# Open video
-video_url = "https://youtu.be/RtYwsTYhtJo?si=2DF-CyvmqMHP8N2R"
-subprocess.Popen(f'{chrome_path} --incognito {video_url}')
-time.sleep(8)
-
-# Get screen size
-screen_width, screen_height = pyautogui.size()
-video_x = screen_width // 2
-video_y = screen_height // 2
-
-# Click Play button
-pyautogui.moveTo(video_x, video_y, duration=0.5)
-pyautogui.click()
-print("Clicked Play button")
-
-# Find and click VTV function
-def find_and_click_vtv():
+# Function to get links from GitHub
+def get_video_links():
+    url = "https://raw.githubusercontent.com/anisidina29/pyautogui_yt/refs/heads/main/links.txt"
     try:
-        screenshot = pyautogui.screenshot()
-        results = reader.readtext(screenshot)
-        for (bbox, text, prob) in results:
-            if "vtv" in text.lower():
-                print(f"[INFO] Found '{text}' (confidence {prob:.2f})")
-                (x_min, y_min), (x_max, y_max) = bbox[0], bbox[2]
-                center_x = (x_min + x_max) // 2
-                center_y = (y_min + y_max) // 2
-                pyautogui.click(center_x, center_y - 100)
-                print(f"[ACTION] Clicked 100px above at ({center_x}, {center_y - 100})")
-                return True
-        return False
+        response = requests.get(url)
+        if response.status_code == 200:
+            links = [line.strip() for line in response.text.splitlines() if line.strip()]
+            print(f"[INFO] Retrieved {len(links)} links from GitHub")
+            return links
+        else:
+            print("[WARNING] Failed to retrieve links")
+            return []
     except Exception as e:
-        print(f"[ERROR] OCR error: {e}")
-        return False
+        print(f"[ERROR] Could not fetch links: {e}")
+        return []
 
+# Get initial links
+video_links = get_video_links()
+current_index = 0
+
+# Function to open a video
+opened_tabs = 0  # Biến toàn cục theo dõi số tab
+
+def open_video(link):
+    global opened_tabs
+    subprocess.Popen(f'{chrome_path} --new-tab {link}')
+    opened_tabs += 1
+    time.sleep(8)  # Đợi trang tải
+
+    # Nếu có hơn 4 tab thì đóng tab cũ
+    if opened_tabs > 4:
+        pyautogui.hotkey('ctrl', 'w')
+        opened_tabs -= 1
+        print("[INFO] Closed old tab because more than 4 tabs were open.")
+
+    # Di chuyển chuột ra giữa màn hình
+    screen_width, screen_height = pyautogui.size()
+    pyautogui.moveTo(screen_width // 2, screen_height // 2, duration=0.5)
+    print(f"[INFO] Playing video: {link}")
+    
 # Human-like action simulation
-def human_like_action():
-    action = random.choice(["move_mouse", "scroll", "keyboard"])
-    if action == "move_mouse":
-        x = random.randint(500, 1000)
-        y = random.randint(200, 600)
-        pyautogui.moveTo(x, y, duration=0.5)
-        print("[ACTION] Mouse moved")
-    elif action == "scroll":
-        pyautogui.scroll(random.choice([200, -200]))
-        print("[ACTION] Page scrolled")
-    elif action == "keyboard":
-        key_action = random.choice(["left", "right"])
-        pyautogui.press(key_action)
-        print(f"[ACTION] Pressed {key_action}")
+import pyautogui
+import random
+import time
 
-# Main loop
+def human_like_action():
+    actions = (
+        ["move_mouse"] * 5 +  # 50%
+        ["idle"] * 2 +        # 20%
+        ["backward", "forward", "volume_up", "volume_down",
+         "mute", "subtitle", "pause_play", "speed_up", "speed_down"] +  # 30%
+        ["like"]              # ~5%
+    )
+
+    action = random.choice(actions)
+
+    if action == "backward":
+        pyautogui.press('j')
+        print("[ACTION] Rewind 10s")
+    elif action == "forward":
+        pyautogui.press('l')
+        print("[ACTION] Forward 10s")
+    elif action == "volume_up":
+        pyautogui.press('up')
+        print("[ACTION] Volume up")
+    elif action == "volume_down":
+        pyautogui.press('down')
+        print("[ACTION] Volume down")
+    elif action == "mute":
+        pyautogui.press('m')
+        print("[ACTION] Mute/Unmute")
+    elif action == "subtitle":
+        pyautogui.press('c')
+        print("[ACTION] Toggle subtitles")
+    elif action == "pause_play":
+        pyautogui.press('k')
+        print("[ACTION] Play/Pause video")
+    elif action == "speed_up":
+        pyautogui.hotkey('shift', '>')
+        print("[ACTION] Speed up")
+    elif action == "speed_down":
+        pyautogui.hotkey('shift', '<')
+        print("[ACTION] Speed down")
+    elif action == "move_mouse":
+        x = random.randint(200, 1200)
+        y = random.randint(200, 700)
+        pyautogui.moveTo(x, y, duration=0.5)
+        print(f"[ACTION] Mouse moved to ({x},{y})")
+    elif action == "idle":
+        print("[ACTION] Idle (do nothing)")
+    elif action == "like":
+        print("[ACTION] Trying to click Like button...")
+        try:
+            like_button = pyautogui.locateOnScreen('like_button.png', confidence=0.8)
+            if like_button:
+                center = pyautogui.center(like_button)
+                pyautogui.click(center)
+                print("[ACTION] Clicked Like button")
+            else:
+                print("[ACTION] Like button not found on screen")
+        except Exception as e:
+            print(f"[ERROR] Failed to click Like button: {e}")
+            
+# Start watching videos
 print("Starting video watching automation...")
 
 while True:
     try:
-        watch_time = random.randint(180, 300)  # 3–5 min
+        if current_index >= len(video_links):
+            video_links = get_video_links()
+            current_index = 0
+
+        open_video(video_links[current_index])
+        current_index += 1
+
+        watch_time = random.randint(300, 800)  # 3–5 min
         start_time = time.time()
         print(f"[INFO] Watching video for {watch_time // 60} min...")
 
         while time.time() - start_time < watch_time:
             skip_ad()
             human_like_action()
-            time.sleep(random.randint(20, 30))  # Perform action every 20–30s
-
-        print("[INFO] Time's up, searching for new video...")
-        if not find_and_click_vtv():
-            print("[WARNING] VTV not found, scrolling...")
-            pyautogui.scroll(-500)
-            time.sleep(2)
+            time.sleep(random.randint(100, 300))
 
     except Exception as e:
         print(f"[ERROR] Main loop error: {e}")
