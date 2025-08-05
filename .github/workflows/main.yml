@@ -23,7 +23,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pyautogui easyocr pillow opencv-python-headless
+          pip install pyautogui easyocr pillow opencv-python-headless requests
 
       - name: Run YouTube Bot
         run: |
