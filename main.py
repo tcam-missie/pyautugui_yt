@@ -6,6 +6,20 @@ import subprocess
 import sys
 import requests
 
+old_url = "https://raw.githubusercontent.com/anisidina29/anisidina29-selenium_earnvids_docker/refs/heads/main/earnvids.txt"
+response_old = requests.get(old_url)
+response_old.raise_for_status()
+links = response_old.text.strip().splitlines()
+
+# Chọn 1 link ngẫu nhiên
+url = random.choice(links)
+print(f"Da chon link: {url}")
+print("Dang mo Chrome...")
+subprocess.Popen(["start", "chrome", "--new-window", url, "--window-size=1280,720"], shell=True)
+
+# 2. Chờ trình duyệt mở và tab chính load
+time.sleep(6)
+
 # Get email and password from command line arguments
 account = sys.argv[1]
 EMAIL, PASSWORD = account.split('|')
@@ -35,7 +49,7 @@ def skip_ad():
         skip_btn = find_text_position(["Skip", "Skip Ads"])
         if skip_btn:
             pyautogui.moveTo(*skip_btn, duration=0.3)
-            pyautogui.click()
+            #pyautogui.click()
             print("Clicked Skip Ad button")
     except Exception as e:
         print(f"[ERROR] Error while skipping ad: {e}")
