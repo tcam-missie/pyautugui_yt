@@ -193,23 +193,49 @@ def human_like_action():
 # Start watching videos
 print("Starting video watching automation...")
 
+MAX_TABS = 4  # Giới hạn số tab
+
+def close_extra_tabs():
+    global opened_tabs
+    while opened_tabs > MAX_TABS:
+        pyautogui.hotkey('ctrl', 'w')
+        opened_tabs -= 1
+        time.sleep(0.5)
+        print("[INFO] Closed extra tab.")
+
+print("Starting video watching automation...")
+
 while True:
     try:
+        # Lấy lại danh sách video nếu đã hết link
         if current_index >= len(video_links):
             video_links = get_video_links()
             current_index = 0
 
+        # Kiểm tra số tab trước khi mở video mới
+        if opened_tabs >= MAX_TABS:
+            print("[INFO] Max tabs reached, closing one tab before opening a new one.")
+            pyautogui.hotkey('ctrl', 'w')
+            opened_tabs -= 1
+            time.sleep(1)
+
+        # Mở video mới
         open_video(video_links[current_index])
         current_index += 1
 
-        watch_time = random.randint(300, 800)  # 3–5 min
+        # Đảm bảo không có tab thừa
+        close_extra_tabs()
+
+        # Thời gian xem video
+        watch_time = random.randint(300, 800)  # 5–13 phút
         start_time = time.time()
         print(f"[INFO] Watching video for {watch_time // 60} min...")
 
+        # Xem video và thực hiện hành động mô phỏng
         while time.time() - start_time < watch_time:
             skip_ad()
             human_like_action()
-            time.sleep(random.randint(100, 300))
+            time.sleep(random.randint(100, 200))  # Giảm thời gian chờ để hành động tự nhiên hơn
 
     except Exception as e:
         print(f"[ERROR] Main loop error: {e}")
