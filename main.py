@@ -43,7 +43,7 @@ def skip_ad():
 # Launch Chrome in fullscreen (NOT incognito)
 chrome_path = r'"C:\Program Files\Google\Chrome\Application\chrome.exe"'
 video_url = "https://www.youtube.com"
-subprocess.Popen(f'{chrome_path} --incognito {video_url}')
+subprocess.Popen(["start", "chrome", "--new-window", video_url, "--window-size=1280,720"], shell=True)
 
 # Wait for Chrome and YouTube to load
 time.sleep(5)
@@ -112,7 +112,7 @@ opened_tabs = 0  # Biến toàn cục theo dõi số tab
 
 def open_video(link):
     global opened_tabs
-    subprocess.Popen(f'{chrome_path} --incognito --new-tab {link}')
+    subprocess.Popen(["start", "chrome", "--new-window", link, "--window-size=1280,720"], shell=True)
     opened_tabs += 1
     time.sleep(8)  # Đợi trang tải
 
