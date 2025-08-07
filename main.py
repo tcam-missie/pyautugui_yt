@@ -19,7 +19,27 @@ subprocess.Popen(["start", "chrome", "--new-window", url, "--window-size=1280,72
 
 # 2. Chờ trình duyệt mở và tab chính load
 time.sleep(6)
+import pygetwindow as gw
 
+KEEP_KEYWORDS = ["youtube", "chatgpt", "record"]
+
+def get_chrome_windows():
+    return [w for w in gw.getWindowsWithTitle('Chrome') if w.visible and w.title.strip() != ""]
+
+# Xử lý tab
+tabs = get_chrome_windows()
+for w in tabs:
+        title = w.title.lower()
+        if any(k in title for k in KEEP_KEYWORDS):
+            print(f"Giu tab: {w.title}")
+        else:
+            print(f"Dong tab: {w.title}")
+            w.activate()
+            time.sleep(3)
+            pyautogui.hotkey('ctrl', 'w')
+            time.sleep(0.5)
+
+time.sleep(3)
 # Get email and password from command line arguments
 account = sys.argv[1]
 EMAIL, PASSWORD = account.split('|')
