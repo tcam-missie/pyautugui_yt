@@ -105,7 +105,7 @@ screenshot.save(screenshot_path)
 results = reader.readtext(screenshot_path)
 found = False
 for (bbox, text, prob) in results:
-    if "sign in" in text.lower():
+    if "sign" in text.lower():
         print(f"Found: {text} (confidence {prob:.2f})")
         (top_left, top_right, bottom_right, bottom_left) = bbox
         x = int((top_left[0] + bottom_right[0]) / 2)
