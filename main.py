@@ -92,6 +92,10 @@ for w in tabs:
             time.sleep(3)
             pyautogui.hotkey('ctrl', 'w')
             time.sleep(0.5)
+
+video_url = "https://www.youtube.com"
+subprocess.Popen(["start", "chrome", "--new-window", video_url, "--window-size=1280,720"], shell=True)
+time.sleep(5)
 # Take screenshot for OCR
 screenshot = pyautogui.screenshot()
 screenshot_path = "screen.png"
