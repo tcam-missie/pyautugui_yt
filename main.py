@@ -265,11 +265,21 @@ while True:
         start_time = time.time()
         print(f"[INFO] Watching video for {watch_time // 60} min...")
 
+        screenshot_count = 0  # Biến đếm để đặt tên file ảnh
+        
         # Xem video và thực hiện hành động mô phỏng
         while time.time() - start_time < watch_time:
             skip_ad()
             human_like_action()
-            time.sleep(random.randint(100, 200))  # Giảm thời gian chờ để hành động tự nhiên hơn
+            
+            # Chụp ảnh màn hình
+            screenshot = pyautogui.screenshot()
+            screenshot_path = f"screenshot_{screenshot_count}.png"
+            screenshot.save(screenshot_path)
+            print(f"[DEBUG] Saved screenshot to {screenshot_path}")
+            screenshot_count += 1
+        
+            time.sleep(random.randint(100, 200))  # Delay giữa các hành động
 
     except Exception as e:
         print(f"[ERROR] Main loop error: {e}")
