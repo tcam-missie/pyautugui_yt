@@ -119,6 +119,19 @@ for (bbox, text, prob) in results:
 
 if not found:
     print("Sign in button not found!")
+    try:
+        sign_in_img = pyautogui.locateOnScreen("sign_in.png", confidence=0.8)
+        if sign_in_img:
+            center = pyautogui.center(sign_in_img)
+            pyautogui.moveTo(center.x, center.y, duration=0.5)
+            for _ in range(3):
+                pyautogui.click()
+                time.sleep(0.2)
+            print("[FALLBACK] Clicked on sign_in.png image")
+        else:
+            print("[FALLBACK] sign_in.png not found on screen")
+    except Exception as e:
+        print(f"[ERROR] Fallback image click failed: {e}")
 
 time.sleep(5)  # Wait for login page
 
