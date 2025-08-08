@@ -133,7 +133,7 @@ if not found:
     except Exception as e:
         print(f"[ERROR] Fallback image click failed: {e}")
 
-time.sleep(5)  # Wait for login page
+time.sleep(8)  # Wait for login page
 
 # Enter email
 pyautogui.typewrite(EMAIL)
