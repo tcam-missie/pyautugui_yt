@@ -38,7 +38,7 @@ for w in tabs:
             time.sleep(3)
             pyautogui.hotkey('ctrl', 'w')
             time.sleep(0.5)
-
+subprocess.Popen(["start", "chrome", "--new-window", url, "--window-size=1280,720"], shell=True)
 time.sleep(3)
 # Get email and password from command line arguments
 account = sys.argv[1]
@@ -81,7 +81,17 @@ subprocess.Popen(["start", "chrome", "--new-window", video_url, "--window-size=1
 
 # Wait for Chrome and YouTube to load
 time.sleep(5)
-
+tabs = get_chrome_windows()
+for w in tabs:
+        title = w.title.lower()
+        if any(k in title for k in KEEP_KEYWORDS):
+            print(f"Giu tab: {w.title}")
+        else:
+            print(f"Dong tab: {w.title}")
+            w.activate()
+            time.sleep(3)
+            pyautogui.hotkey('ctrl', 'w')
+            time.sleep(0.5)
 # Take screenshot for OCR
 screenshot = pyautogui.screenshot()
 screenshot_path = "screen.png"
