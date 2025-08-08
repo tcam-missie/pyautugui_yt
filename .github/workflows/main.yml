@@ -31,3 +31,10 @@ jobs:
         run: python main.py "${{ matrix.account }}"
         env:
             PYTHONUTF8: 1
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-screenshots
+          path: "*.png"
